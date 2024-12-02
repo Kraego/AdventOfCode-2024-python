@@ -19,6 +19,7 @@ def calculate_similarity(listA, listB):
         similarity += a * listB.count(a)
     return similarity
 
+
 if __name__ == '__main__':
     listA, listB = readin_data()
 
