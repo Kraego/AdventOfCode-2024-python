@@ -1,10 +1,10 @@
-def readin_data():
-    with open('Input/Day01.csv', 'r') as f:
+def readin_data(path : str) -> list[(str,str)]:
+    with open(path, 'r') as f:
         rows = [line.rstrip('\n').split(',') for line in f]
         return ([int(x[0]) for x in rows], [int(x[1]) for x in rows])
 
 
-def calculate_distance(listA, listB):
+def calculate_distance(listA : list[str], listB: list[str]) -> int:
     sum = 0
 
     for a,b in zip(listA, listB): 
@@ -12,7 +12,7 @@ def calculate_distance(listA, listB):
     return sum
 
 
-def calculate_similarity(listA, listB):
+def calculate_similarity(listA : list[str], listB: list[str]) -> int:
     similarity = 0
 
     for a in listA:
@@ -21,7 +21,7 @@ def calculate_similarity(listA, listB):
 
 
 if __name__ == '__main__':
-    listA, listB = readin_data()
+    listA, listB = readin_data('Input/Day01.csv')
 
-    print(f'Distance is {calculate_distance(sorted(listA), sorted(listB))}')
-    print(f'Similarity is {calculate_similarity(listA, listB)}')
+    print(f'Distance is {calculate_distance(sorted(listA), sorted(listB))}.')
+    print(f'Similarity is {calculate_similarity(listA, listB)}.')
