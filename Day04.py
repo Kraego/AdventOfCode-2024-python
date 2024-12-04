@@ -1,62 +1,69 @@
-SEARCH_WORD = 'XMAS'
-
 def readin_data(path : str) -> list[str]:
     with open(path, 'r') as f:
         return [line.rstrip('\n') for line in f]
 
 
-def horizontal_count(input : list[str]) -> int:
+def search_from(input, word, row, column, dir_y, dir_x):
+    rows, cols = len(input), len(input[0])
+
+    for i, current in enumerate(word):
+        new_row, new_column = row + dir_y * i, column + dir_x * i
+        if not (0 <= new_row < rows and 0 <= new_column < cols) or input[new_row][new_column] != current:
+            return False
+    return True
+
+
+def count_word_occurence(input : list[str], word : str) -> int:
+    directions = [
+        (-1, 0),  # up
+        (1, 0),   # down
+        (0, -1),  # left
+        (0, 1),   # right
+        (-1, -1), # up-left
+        (-1, 1),  # up-right
+        (1, -1),  # down-left
+        (1, 1)    # down-right
+    ]
+
+    rows, cols = len(input), len(input[0])
     count = 0
 
-    for line in input:
-        count += line.count(SEARCH_WORD)
-        count += line[::-1].count(SEARCH_WORD)
+    for row in range(rows):
+        for column in range(cols):
+            for dir_y, dir_x in directions:
+                if search_from(input, word, row, column, dir_y, dir_x):
+                    count += 1
+
     return count
 
 
-def vertical_count(input : list[str]) -> int:
-    transposed = [''.join(x) for x in tuple(zip(*input))]
-    return horizontal_count(transposed)
+def count_x_word_occurence(input : list[str], word : str) -> int:
+    directions = [
+        (-1, -1), # up-left
+        (-1, 1),  # up-right
+        (1, -1),  # down-left
+        (1, 1)    # down-right
+    ]
 
+    rows, cols = len(input), len(input[0])
+    count = 0
 
-def _reduce_input(input : list[str]) -> list[str]:
-    return [[x for x in row[1:]] for row in input[1:]]
+    for row in range(rows):
+        for column in range(cols):
+            count_for_dir = 0
+            for dir_y, dir_x in directions:
+                if search_from(input, word, row, column, dir_y, dir_x):
+                    count_for_dir += 1
+            count += 1 if count_for_dir >= 2 else 0
 
-
-def _unfold_diagonal(input : list[str]) -> str:
-    if len(input[0]) == 0:
-        return ''
-    
-    unfold = ''
-    current = str(input[0][0])
-
-    if len(input) == 1 or len(input[0]) == 1:
-        return current
-    else:
-        unfold += current + _unfold_diagonal(_reduce_input(input))
-
-    return unfold
-
-
-def _unfold_diagonals(input : list[str]) -> list[str]:
-    unfolds = list()
-
-    for r in range(len(input)):
-        for c in range(len(input[0])):
-            cutoff = len(input[0]) if r == 0 else r
-            shifted_input = [[x for x in row[c:cutoff:1]] for row in input[r:]]
-            unfolds.append(_unfold_diagonal(shifted_input))
-
-    return unfolds
-
-def dioganal_count(input : list[str]) -> int:
-    return horizontal_count(_unfold_diagonals(input))
+    return count 
 
             
 if __name__ == '__main__':
     wordsearch = readin_data('Input/Day04.txt')
-    count = horizontal_count(wordsearch)
-    count += vertical_count(wordsearch)
-    count += dioganal_count(wordsearch)
-
-    print(f'Wordcount for "{SEARCH_WORD}" is {count}');
+    search_word = 'XMAS'
+    count =  count_word_occurence(wordsearch, search_word)
+    print(f'Wordcount for "{search_word}" is {count}');
+    search_word = 'MAS'
+    count =  count_x_word_occurence(wordsearch, search_word)
+    print(f'X-Wordcount for "{search_word}" is {count}');
