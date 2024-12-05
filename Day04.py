@@ -37,25 +37,21 @@ def count_word_occurence(input : list[str], word : str) -> int:
     return count
 
 
-def count_x_word_occurence(input : list[str], word : str) -> int:
-    directions = [
-        (-1, -1), # up-left
-        (-1, 1),  # up-right
-        (1, -1),  # down-left
-        (1, 1)    # down-right
-    ]
-
+def count_x_word_occurence(input : list[str], word : str, center: chr) -> int:
     rows, cols = len(input), len(input[0])
     count = 0
 
-    for row in range(rows):
-        for column in range(cols):
-            count_for_dir = 0
-            for dir_y, dir_x in directions:
-                if search_from(input, word, row, column, dir_y, dir_x):
-                    count_for_dir += 1
-            count += 1 if count_for_dir >= 2 else 0
+    for row in range(1, rows-1):
+        for column in range(1, cols-1):
+            current = input[row][column]
 
+            if current == center:
+                diag1 = f'{input[row-1][column-1]}{current}{input[row+1][column+1]}'
+                diag2 = f'{input[row+1][column-1]}{current}{input[row-1][column+1]}'
+
+                if (diag1 == word or diag1[::-1] == word) and (diag2 == word or diag2[::-1] == word):
+                    count += 1
+            
     return count 
 
             
@@ -65,5 +61,5 @@ if __name__ == '__main__':
     count =  count_word_occurence(wordsearch, search_word)
     print(f'Wordcount for "{search_word}" is {count}');
     search_word = 'MAS'
-    count =  count_x_word_occurence(wordsearch, search_word)
+    count =  count_x_word_occurence(wordsearch, search_word, 'A')
     print(f'X-Wordcount for "{search_word}" is {count}');
